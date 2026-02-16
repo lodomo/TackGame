@@ -3,7 +3,7 @@ Object = Object or require("/libs/classic")
 Tack = Object:extend()
 
 function Tack:new()
-    self.width = 24
+    self.width = 48
     self.height = 32
 
     self.x = RESOLUTION.width / 2 - self.width / 2
@@ -28,12 +28,34 @@ function Tack:new()
     self.axis = getAxis
     self.grounded = false
     self.gravity = 500
+
+    self.idle_animation = self:load_animation("sprites/tack/idle")
+    self.animation_speed = 10 -- Frames per second
+    self.current_animation = self.idle_animation
+    self.current_frame = 1
 end
 
 function Tack:draw()
+    --[[
     love.graphics.setColor(self.color)
     love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
     love.graphics.setColor(1, 1, 1) -- Reset color to white
+    --]]
+    local current_frame = CLOCK * 100 / self.animation_speed % #self.current_animation + 1
+    love.graphics.draw(self.current_animation[math.floor(current_frame)], self.x, self.y)
+end
+
+function Tack:load_animation(path)
+    animation = {}
+    -- Debug first by printing the name of all the files in path
+    local files = love.filesystem.getDirectoryItems(path)
+    print("Loading animation from " .. path .. ":")
+    for _, file in ipairs(files) do
+        print("  " .. file)
+        local image = love.graphics.newImage(path .. "/" .. file)
+        table.insert(animation, image)
+    end
+    return animation
 end
 
 function Tack:printStatus()
@@ -47,7 +69,7 @@ function Tack:printStatus()
 end
 
 function Tack:update(dt)
-    self:printStatus()
+    -- self:printStatus()
 
     if self.axis() > 0.1 and self.grounded then
         self.jump_charge = self.jump_charge + (self.max_jump_velocity / self.jump_charge_time) * dt

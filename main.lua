@@ -4,7 +4,6 @@
 require("tack")
 require("input_state")
 
--- B is button 3
 
 ---[[
 function love.load()
@@ -35,6 +34,8 @@ function love.load()
     print("Joysticks found: " .. #JOYSTICKS)
 
     TACK = Tack()
+
+    CLOCK = 0
 end
 --]]
 
@@ -62,6 +63,7 @@ end
 
 ---[[
 function love.update(dt)
+    CLOCK = CLOCK + dt
     TACK:update(dt)
     -- Listen for escape key to quit
     if love.keyboard.isDown("escape") then
